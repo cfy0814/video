@@ -25,14 +25,37 @@ pip install -U langchain-openai opencv-python langchain-core
 
 ```
 real/
-├── 6.py                # 主程序：视频流实时AI分析
+├── 6.py                # 主程序：视频流实时AI分析+YOLO检测
 ├── 2.mp4               # 示例视频文件
+├── yo.pt          # YOLO预训练权重（首次运行自动下载）
 ├── EasyDarwin/         # RTSP流服务器（可选）
 ├── ffmpeg/             # 推流工具（可选）
 └── README.md           # 项目说明文档
 ```
 
 ------
+
+## YOLO 目标检测
+1. 功能说明
+兼容本地视频 / RTSP 实时流逐帧目标检测
+自动绘制检测框、类别标签、置信度
+可与多模态大模型联动：先 YOLO 检测物体，再由 VL 大模型做场景语义理解
+支持自定义置信度阈值、检测类别、GPU 加速推理
+2.使用方式
+安装依赖 pip install ultralytics
+无需手动下载权重，首次运行自动拉取 yolov8n.pt
+保持原有本地视频 / RTSP 流启动方式不变，直接运行 python 6.py
+视频窗口自动叠加目标检测框，终端同时输出大模型场景描述
+3. 联动大模型逻辑
+YOLO 先识别画面中人、车、物品等目标
+筛选关键检测帧转为 Base64
+传入 Qwen3-VL 多模态大模型，结合检测结果做深度场景解读
+可扩展实现异常目标报警、人数统计、区域入侵检测
+4.. YOLO 常见问题
+权重下载失败：手动下载 yolov8n.pt 放入项目根目录
+检测卡顿：调低 imgsz、提高 conf 阈值，或启用 GPU
+RTSP 流检测延迟：设置 YOLO stream=True 流式推理优化
+检测类别不符：可加载自定义训练 YOLO 权重，适配业务场景
 
 ## 🚀 快速运行
 
